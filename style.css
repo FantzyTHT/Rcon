@@ -1,5 +1,6 @@
+/* Simple terminal style */
 body {
-  background: #0e0e0e;
+  background-color: #0e0e0e;
   color: #e5e5e5;
   font-family: monospace;
   display: flex;
@@ -12,23 +13,26 @@ body {
 .terminal {
   width: 700px;
   max-width: 90%;
-  background: #111;
+  background-color: #111;
   border: 1px solid #333;
   padding: 12px;
+  border-radius: 6px;
 }
 
 .header {
   color: #00ff88;
+  font-weight: bold;
   margin-bottom: 8px;
 }
 
 pre {
-  background: #000;
+  background-color: #000;
   padding: 8px;
   height: 300px;
   overflow-y: auto;
   margin: 0 0 8px 0;
   border: 1px solid #222;
+  white-space: pre-wrap;
 }
 
 .input-line {
@@ -43,4 +47,7 @@ input {
   border: none;
   outline: none;
   font-family: monospace;
+}
+input::placeholder {
+  color: #666;
 }
