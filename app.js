@@ -1,29 +1,50 @@
-const API_URL = "https://YOUR-BACKEND-URL/cmd"; // change this
-
-const input = document.getElementById("command");
+// =========================
+// CONFIG
+// =========================
+const API_URL = "https://YOUR-BACKEND-URL/cmd"; // CHANGE this
 const output = document.getElementById("output");
+const input = document.getElementById("command");
 
+// =========================
+// AUTH (API KEY)
+// =========================
+let apiKey = localStorage.getItem("apiKey");
+if (!apiKey) {
+  apiKey = prompt("Enter your WebRCON API key:");
+  localStorage.setItem("apiKey", apiKey);
+}
+
+// =========================
+// COMMAND HANDLER
+// =========================
 input.addEventListener("keydown", async (e) => {
   if (e.key !== "Enter") return;
 
   const cmd = input.value.trim();
   if (!cmd) return;
 
-  output.textContent += `> ${cmd}\n`;
+  printToTerminal(`> ${cmd}`);
   input.value = "";
 
   try {
     const res = await fetch(API_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-Key": apiKey
+      },
       body: JSON.stringify({ command: cmd })
     });
 
     const data = await res.json();
-    output.textContent += data.output + "\n";
-  } catch {
-    output.textContent += "[Error] Backend unreachable\n";
+    printToTerminal(data.output);
+  } catch (err) {
+    printToTerminal("[Error] Cannot reach backend");
+    console.error(err);
   }
-
-  output.scrollTop = output.scrollHeight;
 });
+
+function printToTerminal(text) {
+  output.textContent += text + "\n";
+  output.scrollTop = output.scrollHeight;
+}
