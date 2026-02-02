@@ -1,39 +1,59 @@
-// =========================
-// CONFIG
-// =========================
-const API_URL = "https://YOUR-BACKEND-URL/cmd"; // CHANGE this
+let API_URL = "https://YOUR-BACKEND-URL/cmd"; // change this
+
+const loginDiv = document.getElementById("login");
 const output = document.getElementById("output");
-const input = document.getElementById("command");
+const inputLine = document.querySelector(".input-line");
+const commandInput = document.getElementById("command");
+const connectBtn = document.getElementById("connect");
+const playersBtn = document.getElementById("players");
 
-// =========================
-// AUTH (API KEY)
-// =========================
-let apiKey = localStorage.getItem("apiKey");
-if (!apiKey) {
-  apiKey = prompt("Enter your WebRCON API key:");
-  localStorage.setItem("apiKey", apiKey);
-}
+let rconInfo = {};
 
-// =========================
-// COMMAND HANDLER
-// =========================
-input.addEventListener("keydown", async (e) => {
+// ======= CONNECT BUTTON =======
+connectBtn.addEventListener("click", () => {
+  const ip = document.getElementById("ip").value.trim();
+  const port = document.getElementById("port").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  if (!ip || !port || !password) {
+    alert("Please fill in all fields.");
+    return;
+  }
+
+  rconInfo = { ip, port, password };
+
+  loginDiv.style.display = "none";
+  output.style.display = "block";
+  inputLine.style.display = "flex";
+
+  printToTerminal("Connected to " + ip + ":" + port + "\n");
+});
+
+// ======= SEND COMMAND =======
+commandInput.addEventListener("keydown", async (e) => {
   if (e.key !== "Enter") return;
+  await sendCommand(commandInput.value);
+  commandInput.value = "";
+});
 
-  const cmd = input.value.trim();
+// ======= PLAYER LIST BUTTON =======
+playersBtn.addEventListener("click", async () => {
+  await sendCommand("list");
+});
+
+// ======= FUNCTION TO SEND COMMAND =======
+async function sendCommand(cmd) {
   if (!cmd) return;
-
-  printToTerminal(`> ${cmd}`);
-  input.value = "";
+  printToTerminal("> " + cmd);
 
   try {
     const res = await fetch(API_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-Key": apiKey
-      },
-      body: JSON.stringify({ command: cmd })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        command: cmd,
+        rcon: rconInfo  // send user-provided IP/port/password to backend
+      })
     });
 
     const data = await res.json();
@@ -42,8 +62,9 @@ input.addEventListener("keydown", async (e) => {
     printToTerminal("[Error] Cannot reach backend");
     console.error(err);
   }
-});
+}
 
+// ======= PRINT TO TERMINAL =======
 function printToTerminal(text) {
   output.textContent += text + "\n";
   output.scrollTop = output.scrollHeight;
