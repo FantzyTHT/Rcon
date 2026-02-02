@@ -10,11 +10,20 @@
   <div class="terminal">
     <div class="header">WebRCON</div>
 
-    <pre id="output">Welcome to WebRCON!\n</pre>
+    <div id="login">
+      <p>Enter your Minecraft server RCON info:</p>
+      <input id="ip" placeholder="Server IP">
+      <input id="port" placeholder="Port" type="number">
+      <input id="password" placeholder="RCON Password" type="password">
+      <button id="connect">Connect</button>
+    </div>
 
-    <div class="input-line">
+    <pre id="output" style="display:none;"></pre>
+
+    <div class="input-line" style="display:none;">
       <span>&gt;</span>
       <input id="command" autocomplete="off" placeholder="Enter command">
+      <button id="players">Show Players</button>
     </div>
   </div>
 
